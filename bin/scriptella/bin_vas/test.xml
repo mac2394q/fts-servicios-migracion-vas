@@ -1,0 +1,57 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+        <include href="mysql.properties" />
+	</properties>
+
+	<connection id="conexion_1_mssql" 
+                driver="${driver_mssql}" 
+                url="${url_mssql}" 
+                user="${usuario_mssql}" 
+                password="${password_mssql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\vas\DatosMysqlTasajera2.tar\DatosMysqlTasajera2\DatosMysql\lib\mssql-jdbc-8.2.2.jre8.jar" />
+
+    <connection id="conexion_2_mysql" 
+                driver="${driver_mysql}" 
+                url="${url_mysql}" 
+                user="${usuario_mysql}" 
+                password="${password_mysql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\vas\DatosMysqlTasajera2.tar\DatosMysqlTasajera2\DatosMysql\lib\mysql-connector-java-5.1.14-bin.jar" />
+	
+    <connection id="log" driver="text"/>
+	
+	<query connection-id="conexion_1_mssql">
+	    select b.PAN as tag_id, a.ACCOUNT as cliente_id ,b.PLATE as placa_vehiculo
+	    from aaccount a, amember b, aclass c, atemplate d, astrattime e
+	    where a.creator+a.account = b.creator+b.account
+	    and b.class = c.class
+	    and a.template = d.template
+	    and a.discstrat = e.strattime
+		and a.status &lt;&gt; 'C'
+		and a.EXGROUP is  null order by cliente_id  OFFSET 1 ROWS FETCH NEXT 3 ROWS ONLY;
+		<query connection-id="conexion_2_mysql"> 
+			SELECT count(*) as c , clientes.id as cliente_id ,cuentas.id as 'cuenta_id' , vehiculos.id as 'vehiculo_id'  
+			FROM clientes 
+			    JOIN cuentas ON ( clientes.identificacion = cuentas.cliente_identificacion ) 
+								   
+			    JOIN vehiculos ON (vehiculos.cuenta_id = cuentas.id) 
+					 WHERE vehiculos.TID ='${tag_id}'  and vehiculos.TID is not null
+
+			<script connection-id="log">
+						Inner script: "SELECT LENGTH(vehiculos.TID) , clientes.id as cliente_id ,cuentas.id as 'cuenta_id' , vehiculos.id as 'vehiculo_id'  
+						FROM clientes 
+							JOIN cuentas ON ( clientes.identificacion = cuentas.cliente_identificacion ) 
+											   
+							JOIN vehiculos ON (vehiculos.cuenta_id = cuentas.id) 
+								 WHERE vehiculos.TID ='${tag_id}'  and vehiculos.TID is not null" 
+			</script>
+			
+		</query>
+
+		
+	</query>
+
+</etl>

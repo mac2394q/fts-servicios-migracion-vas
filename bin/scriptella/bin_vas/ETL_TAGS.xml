@@ -1,0 +1,41 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+		<include href="mysql.properties" />
+	</properties>
+
+	<connection id="conexion_1_mssql" driver="${driver_mssql}" url="${url_mssql}" user="${usuario_mssql}" password="${password_mssql}"  classpath="..\..\lib\sqlserver\mssql-jdbc-8.2.2.jre8.jar" />
+
+	<connection id="conexion_2_mysql"  driver="${driver_mysql}" url="${url_mysql}" user="${usuario_mysql}" password="${password_mysql}"  classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" />
+
+	<connection id="log" driver="text"/>
+	<script connection-id="log">
+		Migracion de TAGS 
+	</script>
+	<query connection-id="conexion_1_mssql">
+	    select DISTINCT pan as TID  
+	    from  amember 
+	    where PAN is not null
+		<script connection-id="log">
+		 TID: $TID
+	    </script>
+		<query connection-id="conexion_2_mysql"> 
+
+			SELECT   vehiculos.id as vehiculo_id  , vehiculos.placa_vehiculo as placa_vehiculo, cuentas.id as cuentas_id,cuentas.cliente_id as cliente_id
+			FROM easyroad_temp.vehiculos JOIN easyroad_temp.cuentas on(vehiculos.cuenta_id=cuentas.id) 
+					WHERE vehiculos.TID ="${TID}";
+
+			<script connection-id="log">
+		    TID: $TID CLIENTE ID: $cliente_id CUENTA ID: $cuentas_id VEHICULO ID $vehiculo_id PLACA $placa_vehiculo
+			</script>
+			
+			<script connection-id="conexion_2_mysql"> 
+                use easyroad_temp;
+				INSERT INTO tags ( tag_id, cliente_id,  cuenta_id, vehiculo_id, tarjeta_estados_id,  placa_vehiculo, estado_compra) 
+							   VALUES ( '${TID}', ${cliente_id} ,${cuentas_id} , ${vehiculo_id} ,1 ,'${placa_vehiculo}',2);
+			</script>
+		</query>
+	</query>
+
+</etl>

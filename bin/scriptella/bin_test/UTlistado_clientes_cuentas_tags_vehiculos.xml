@@ -1,0 +1,22 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+
+	<properties>
+		<include href="mysql.properties" />
+	</properties>
+	<connection id="conexion_db_mysql" driver="${driver_mysql}" url="${url_mysql}" user="${usuario_mysql}" password="${password_mysql}" autocommit="true" classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" />
+	<script connection-id="conexion_db_mysql">
+	  SELECT clientes.id AS ID ,
+      clientes.nombre ,
+      clientes.identificacion,
+      cuentas.id AS idcuenta,
+      cuentas.saldo,
+      vehiculos.TID,
+      vehiculos.placa_vehiculo,
+      tags.tag_id
+      FROM clientes JOIN cuentas ON(clientes.id=cuentas.cliente_id) 
+      JOIN vehiculos ON(cuentas.id=vehiculos.cuenta_id) 
+      JOIN tags ON(vehiculos.TID=tags.tag_id) 
+	</script>
+
+</etl>

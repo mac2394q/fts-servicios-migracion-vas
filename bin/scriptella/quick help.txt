@@ -1,0 +1,6 @@
+//script para ejecutar proceso de migracion manual
+
+java -jar scriptella.jar bin_vas\ETL_CUENTAS_CLIENTES.xml
+java -jar scriptella.jar bin_vas\ETL_SALDOS_CUENTAS.xml  
+java -jar scriptella.jar bin_vas\ETL_VEHICULOS.xml  
+java -jar scriptella.jar bin_vas\ETL_TAGS.xml

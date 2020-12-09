@@ -1,0 +1,34 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+		<include href="mysql.properties" />
+	</properties>
+	<connection id="conexion_1_mssql" driver="${driver_mssql}" url="${url_mssql}" user="${usuario_mssql}" password="${password_mssql}" classpath="..\..\lib\sqlserver\mssql-jdbc-8.2.2.jre8.jar" />
+	<connection id="conexion_2_mysql" autocommit="true" driver="${driver_mysql}" url="${url_mysql}" user="${usuario_mysql}" password="${password_mysql}" classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" />
+	<connection id="log" driver="text"/>
+	<script connection-id="log">
+		Migracion de SALDOS - CLIENTES PREPAGO:
+	</script>
+	<query connection-id="conexion_1_mssql">
+	    
+		select DISTINCT  a.creator+a.account+a.luhn as cliente_id ,a.BALANCE/100 as saldo , a.numberdoc as  cliente_identificacion, a.creator+a.account+a.luhn as contrato
+	    from aaccount a, amember b, aclass c, atemplate d
+where a.creator+a.account = b.creator+b.account
+	and b.class = c.class
+	and a.template = d.template
+	and a.status = 'N'
+	and  a.exgroup in (select [option] from AOPTIONCHOICE)
+		<script connection-id="log">
+		    CLIENTE ID: $cliente_id  SALDOS: $saldo Identificacion Cliente $cliente_identificacion
+		</script>
+		<script connection-id="conexion_2_mysql">
+			
+	
+			INSERT INTO easyroad_temp.cuentas ( `cliente_id`, `cuenta_estados_id`,  `saldo`,  `cliente_identificacion`) 
+			VALUES ( ${cliente_id}, 1,${saldo},'${cliente_identificacion}',${contrato} );
+	
+		</script>
+	</query>
+
+</etl>

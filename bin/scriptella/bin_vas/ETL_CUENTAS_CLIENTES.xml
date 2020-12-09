@@ -1,0 +1,33 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+		<include href="mysql.properties" />
+	</properties>
+	<connection id="conexion_1_mssql" driver="${driver_mssql}" url="${url_mssql}" user="${usuario_mssql}" password="${password_mssql}" classpath="..\..\lib\sqlserver\mssql-jdbc-8.2.2.jre8.jar" />
+	<connection id="conexion_2_mysql" driver="${driver_mysql}" url="${url_mysql}" user="${usuario_mysql}"  password="${password_mysql}" classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" />
+	<connection id="log" driver="text"/>
+	<script connection-id="log">
+		Migracion de CLIENTES ACTIVOS PREPAGO:
+	</script>
+	<query connection-id="conexion_1_mssql">
+	    SELECT creator+account+luhn as id,
+	    CONCAT(forename,surname,surname2) as nombre ,
+	    numberdoc as identificacion,
+	    ADDRESS as direccion,
+	    MOBILEPHONE as telefono,
+	    email as email,
+	    creationtime as insertTime,
+	    country as ciudad
+		from AACCOUNT WHERE  status = 'N' and exgroup IS NULL 
+		<script connection-id="log">
+		    Nombre: $nombre  Identificacion: $identificacion Direccion: $direccion Telefono: $telefono Mail: $email Ciudad: $ciudad
+		</script>
+		<script connection-id="conexion_2_mysql">
+			use easyroad_temp;
+			INSERT INTO clientes (`id`, `nombre`, `identificacion`, `tipo_documento`, `direccion`, `telefono`, `email`, `cliente_estados_id`, `ciudad` )
+			VALUES( ${id}, "${nombre}", "${identificacion}", 1,'${direccion}', "${telefono}", '${email}', 1, '${ciudad}'  );
+		
+		</script>
+	</query>
+</etl>

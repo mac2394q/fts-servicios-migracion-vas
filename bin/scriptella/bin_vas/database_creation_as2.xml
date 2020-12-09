@@ -1,0 +1,129 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+
+  <properties>
+    <include href="mysql.properties" />
+  </properties>
+  <connection id="conexion_db_mysql" driver="${driver_mysql}" url="${url_mysql}" user="${usuario_mysql}" password="${password_mysql}" autocommit="true" classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" />
+  <script connection-id="conexion_db_mysql">
+	  use as2;
+
+  
+    CREATE TABLE IF NOT EXISTS cliente (
+      id char(36) NOT NULL,
+      codigo char(36) NOT NULL,
+      tipoIdentificacion int(11) DEFAULT NULL,
+      identificacion varchar(20) DEFAULT NULL,
+      nombre varchar(100) DEFAULT NULL,
+      tipoCliente int(11) DEFAULT '1',
+      telefono varchar(45) DEFAULT NULL,
+      email varchar(100) DEFAULT 'facturacioncliente@consurr7h.com',
+      codigoISOPais varchar(45) DEFAULT 'ECU',
+      pais varchar(200) DEFAULT 'ECUADOR',
+      provincia varchar(200) DEFAULT 'EL ORO',
+      ciudad varchar(200) DEFAULT 'SANTA ROSA',
+      direccion varchar(100) DEFAULT '.',
+      formaPago int(11) DEFAULT '1',
+      condicionPago int(11) DEFAULT '1',
+      descripcion text,
+      estado int(11) DEFAULT '1',
+      fechaCreacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      fechaActualizacion timestamp NULL DEFAULT NULL,
+      sync_field int(11) DEFAULT '0',
+      codigoPostal varchar(50) DEFAULT NULL,
+      tipoFacturacion int(10) DEFAULT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+    INSERT IGNORE INTO cliente (id, codigo, tipoIdentificacion, identificacion, nombre, tipoCliente, telefono, email, codigoISOPais, pais, provincia, ciudad, direccion, formaPago, condicionPago, descripcion, estado, fechaCreacion, fechaActualizacion, sync_field, codigoPostal,tipoFacturacion) VALUES
+	('00000000-0000-0000-0000-000000000000', '0', 7, 'CF', 'CONSUMIDOR FINAL', 1, '72985629', 'facturacion@consurr7h.com', 'GTA', 'GT', '.', '.', 'CIUDAD', 1, 99, 'COBRO PEAJE', 1, '2020-04-28 11:31:11', '2019-04-04 10:40:35', 1, '01005',0);
+
+  CREATE TABLE IF NOT EXISTS configuracion_FEL (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  Parametro varchar(100) DEFAULT NULL,
+  descripcion varchar(200) DEFAULT NULL,
+  ValorNumerico int(11) DEFAULT '0',
+  ValorAlpha varchar(150) DEFAULT NULL,
+  ValorMoneda decimal(10,2) DEFAULT '0.00',
+  Habilitador int(11) DEFAULT '0',
+  codigo varchar(45) DEFAULT NULL,
+  PRIMARY KEY (id) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+
+INSERT IGNORE INTO `configuracion_fel` (`id`, `Parametro`, `descripcion`, `ValorNumerico`, `ValorAlpha`, `ValorMoneda`, `Habilitador`, `codigo`) VALUES
+	(1, 'nit_emisor', 'nit emisor por peaje se consulta  con la informacion del peaje en el codigo', 0, '48447838', 0.00, 0, '92'),
+	(2, 'nit_emisor', 'nit emisor por peaje se consulta  con la informacion del peaje en el codigo', 0, '91178754', 0.00, 0, '93'),
+	(3, 'nit_emisor', 'nit emisor por peaje se consulta  con la informacion del peaje en el codigo', 0, '93547854', 0.00, 0, '94'),
+	(4, 'nombre_emisor', 'nombre de emprea emisora ', 0, 'SACBE, SOCIEDAD ANONIMA', 0.00, 0, '92'),
+	(5, 'codigo_establecimiento', 'codigo_establecimiento', 0, '1', 0.00, 0, '92'),
+	(6, 'nombre_comercial', 'nombre_comercial', 0, 'SACBE', 0.00, 0, '92'),
+	(7, 'direccion_emisor', 'direccion_emisor', 0, 'CIUDAD', 0.00, 0, '92'),
+	(8, 'codPostal_emisor', 'codPostal_emisor', 0, '01000', 0.00, 0, '92'),
+	(9, 'municipio_emisor', 'municipio_emisor', 0, 'Guatemala', 0.00, 0, '92'),
+	(10, 'departamento_emisor', 'departamento_emisor', 0, 'GUATEMALA', 0.00, 0, '92'),
+	(11, 'Tipo_frase1', 'Tipo_frase1 ', 8, '1', 0.00, 0, '92'),
+	(12, 'Tipo_frase2', 'Tipo_frase2 ', 8, '2', 0.00, 0, '92'),
+	(13, 'Cod_escenario1', 'Cod_escenario1  ', 8, '1', 0.00, 0, '92'),
+	(14, 'Cod_escenario2', 'Cod_escenario2', 8, '1', 0.00, 0, '92'),
+	(15, 'nombre_impuesto', 'nombre impuesto', 0, 'IVA', 0.00, 0, '92'),
+	(16, 'codGravable_impuesto', 'codigo base gravable impuesto', 0, '1', 0.00, 0, '92'),
+	(17, 'requestor', 'requestor', 0, 'E9978590-0E0E-4E60-856D-851C2B537AE5', 0.00, 0, '92'),
+	(18, 'entity', 'entity', 0, '48447838', 0.00, 0, '92'),
+	(19, 'UserName', 'UserName', 0, 'ADMINISTRADOR', 0.00, 0, '92'),
+	(20, 'UrlWS', 'UrlWS', 0, 'https://portal.cofidiguatemala.com/webservicefrontfeltest/factwsfront.asmx', 0.00, 0, '92'),
+	(22, 'user', 'user', 0, 'E9978590-0E0E-4E60-856D-851C2B537AE5', 0.00, 0, '92'),
+	(23, 'nombre_emisor', 'nombre de emprea emisora ', 0, 'CIPRESES Y PINOS SOCIEDAD ANONIMA', 0.00, 0, '93'),
+	(24, 'nombre_emisor', 'nombre de emprea emisora ', 0, 'TRAMO SB3, SOCIEDAD ANONIMA', 0.00, 0, '94'),
+	(25, 'codigo_establecimiento', 'codigo_establecimiento', 0, '1', 0.00, 0, '93'),
+	(26, 'codigo_establecimiento', 'codigo_establecimiento', 0, '1', 0.00, 0, '94'),
+	(27, 'nombre_comercial', 'nombre_comercial', 0, 'CIPRESES Y PINOS', 0.00, 0, '93'),
+	(28, 'nombre_comercial', 'nombre_comercial', 0, 'TRAMO SB3', 0.00, 0, '94'),
+	(29, 'direccion_emisor', 'direccion_emisor', 0, 'CIUDAD', 0.00, 0, '93'),
+	(30, 'direccion_emisor', 'direccion_emisor', 0, 'CIUDAD', 0.00, 0, '94'),
+	(31, 'codPostal_emisor', 'codPostal_emisor', 0, '01000', 0.00, 0, '93'),
+	(32, 'codPostal_emisor', 'codPostal_emisor', 0, '01000', 0.00, 0, '94'),
+	(33, 'municipio_emisor', 'municipio_emisor', 0, 'Guatemala', 0.00, 0, '93'),
+	(34, 'municipio_emisor', 'municipio_emisor', 0, 'Guatemela', 0.00, 0, '94'),
+	(35, 'departamento_emisor', 'departamento_emisor', 0, 'GUATEMALA', 0.00, 0, '93'),
+	(36, 'departamento_emisor', 'departamento_emisor', 0, 'GUATEMALA', 0.00, 0, '94'),
+	(37, 'Tipo_frase1', 'Tipo_frase1', 0, '1', 0.00, 0, '93'),
+	(38, 'Tipo_frase2', 'Tipo_frase2', 0, '2', 0.00, 0, '93'),
+	(39, 'Cod_escenario1', 'Cod_escenario1', 0, '2', 0.00, 0, '93'),
+	(40, 'Cod_escenario2', 'Cod_escenario2', 0, '1', 0.00, 0, '93'),
+	(41, 'Tipo_frase1', 'Tipo_frase1', 0, '1', 0.00, 0, '94'),
+	(42, 'Tipo_frase2', 'Tipo_frase2', 0, '2', 0.00, 0, '94'),
+	(43, 'Cod_escenario1', 'Cod_escenario1', 0, '2', 0.00, 0, '94'),
+	(44, 'Cod_escenario2', 'Cod_escenario2', 0, '1', 0.00, 0, '94'),
+	(45, 'nombre_impuesto', 'nombre_impuesto', 0, 'IVA', 0.00, 0, '93'),
+	(46, 'nombre_impuesto', 'nombre_impuesto', 0, 'IVA', 0.00, 0, '94'),
+	(47, 'codGravable_impuesto', 'codGravable_impuesto', 0, '1', 0.00, 0, '93'),
+	(48, 'codGravable_impuesto', 'codGravable_impuesto', 0, '1', 0.00, 0, '94'),
+	(49, 'requestor', 'requestor', 0, '01A91DAD-DA35-48EA-8ACD-789DE7F8587F', 0.00, 0, '93'),
+	(50, 'requestor', 'requestor', 0, 'EE41A563-2C40-4DC4-B332-1B57028F13A4', 0.00, 0, '94'),
+	(51, 'entity', 'entity', 0, '91178754', 0.00, 0, '93'),
+	(52, 'entity', 'entity', 0, '93547854', 0.00, 0, '94'),
+	(53, 'UserName', 'UserName', 0, 'ADMINISTRADOR', 0.00, 0, '93'),
+	(54, 'UserName', 'UserName', 0, 'ADMINISTRADOR', 0.00, 0, '94'),
+	(55, 'UrlWS', 'UrlWS', 0, 'https://portal.cofidiguatemala.com/webservicefrontfeltest/factwsfront.asmx', 0.00, 0, '93'),
+	(56, 'UrlWS', 'UrlWS', 0, 'https://portal.cofidiguatemala.com/webservicefrontfeltest/factwsfront.asmx', 0.00, 0, '94'),
+	(57, 'user', 'user', 0, '01A91DAD-DA35-48EA-8ACD-789DE7F8587F', 0.00, 0, '93'),
+	(58, 'user', 'user', 0, 'EE41A563-2C40-4DC4-B332-1B57028F13A4', 0.00, 0, '94'),
+	(59, 'nombre_certificador', 'Nombre del certificador', 0, 'COFIDI SOCIEDAD ANONIMA', 0.00, 0, '92'),
+	(60, 'nit_certificador', 'Nit del certificador', 0, '62469045', 0.00, 0, '92'),
+	(61, 'nombre_certificador', 'Nombre del certificador', 0, 'COFIDI SOCIEDAD ANONIMA', 0.00, 0, '93'),
+	(62, 'nit_certificador', 'Nit del certificador', 0, '62469045', 0.00, 0, '93'),
+	(63, 'nombre_certificador', 'Nombre del certificador', 0, 'COFIDI SOCIEDAD ANONIMA', 0.00, 0, '94'),
+	(64, 'nit_certificador', 'Nit del certificador', 0, '62469045', 0.00, 0, '94'),
+	(65, 'cadena_frase', 'Texto de las frases', 0, 'Sujeto a pagos trimestrales ISR.  Agente de Retencion del IVA.', 0.00, 0, '92'),
+	(66, 'cadena_frase', 'Texto de las frases', 0, 'Sujeto a retencion definitiva ISR. Agente de retencion del IVA.', 0.00, 0, '93'),
+	(67, 'cadena_frase', 'Texto de las frases', 0, 'Sujeto a retencion definitiva ISR. Agente de retencion del IVA.', 0.00, 0, '94'),
+	(68, 'prefijo_facturador', 'Prefijo del facturador para calcularid interno FEL', 0, 'SCB', 0.00, 0, '92'),
+	(69, 'prefijo_facturador', 'Prefijo del facturador para calcularid interno FEL', 0, 'CYP', 0.00, 0, '93'),
+	(70, 'prefijo_facturador', 'Prefijo del facturador para calcularid interno FEL', 0, 'TS3', 0.00, 0, '94'),
+	(71, 'Entity_codifi_nit', NULL, 0, '800000001026', 0.00, 0, '92'),
+	(72, 'Requestor_codifi_nit', NULL, 0, '8A454E3F-CEA1-41D8-A13A-A748A4891BBF', 0.00, 0, '92'),
+	(73, 'urlWS_codifi_nit', NULL, 0, 'https://portal.cofidiguatemala.com/ConsultaNIT/ConsultaNIT.asmx', 0.00, 0, '92');
+  </script>
+
+</etl>

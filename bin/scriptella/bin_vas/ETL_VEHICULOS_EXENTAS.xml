@@ -1,0 +1,38 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+		<include href="mysql.properties" />
+	</properties>
+	<connection id="conexion_1_mssql" driver="${driver_mssql}" url="${url_mssql}" user="${usuario_mssql}" password="${password_mssql}" classpath="..\..\lib\sqlserver\mssql-jdbc-8.2.2.jre8.jar" />
+	<connection id="conexion_2_mysql"  driver="${driver_mysql}" url="${url_mysql}" user="${usuario_mysql}" password="${password_mysql}" classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" />
+	<connection id="log" driver="text"/>
+	<script connection-id="log">
+		Migracion de vehiculos :
+	</script>
+	<query connection-id="conexion_1_mssql">
+	    select pan as TID ,c.CLASS as categoria_id , b.plate as placa_vehiculo , a.BALANCE/100 as saldo,a.creator+a.account+a.luhn as cliente_id,
+	    b.MODEL as modelo ,b.MAKE as marca ,b.COLOUR as color
+		from aaccount a, amember b, aclass c, atemplate d
+	    where a.creator+a.account = b.creator+b.account
+	    and b.class = c.class
+	    and a.template = d.template
+		and a.exgroup in (select [option] from AOPTIONCHOICE)  
+		AND PAN is not null
+		and a.status = 'N' 
+		
+		
+		<query connection-id="conexion_2_mysql"> 
+		 
+			SELECT   cuentas.id as 'cuenta_id' FROM easyroad_temp.cuentas  WHERE cuentas.cliente_id =${cliente_id} LIMIT 1 ;
+			<script connection-id="log">
+                TID: $TID IDCUENTA: $cuenta_id PLACA VEHICULO $placa_vehiculo SALDO: $saldo
+		    </script>
+			<script connection-id="conexion_2_mysql">   
+			use easyroad_temp;
+			INSERT INTO vehiculos ( TID,recaudador_id, `categoria_id` , `estado`, `tipos_contrato_id`, `placa_vehiculo`, `saldo`,  `cuenta_id`, `modelo_vehiculo`,`marca_vehiculo`,`color_vehiculo`,`forma_pago_id`) 
+			VALUES ('${TID}',0, ${categoria_id}, 1,7,'${placa_vehiculo}',${saldo},${cuenta_id},'${modelo}','${marca}','${color}',4);
+			</script>
+		</query>
+	</query>
+</etl>

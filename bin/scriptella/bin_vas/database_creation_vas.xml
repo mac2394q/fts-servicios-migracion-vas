@@ -1,0 +1,108 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+
+	<properties>
+        <include href="mysql.properties" />
+	</properties>
+  <connection id="conexion_db_mysql" 
+              driver="${driver_mysql}" 
+              url="${url_mysql}" 
+              user="${usuario_mysql}" 
+              password="${password_mysql}"
+		          autocommit="true" 
+              classpath="..\..\lib\mysql\mysql-connector-java-5.1.14-bin.jar" 
+  />
+	<script connection-id="conexion_db_mysql">
+	  use easyroad_db;
+
+    DROP TABLE IF EXISTS clientes;
+    CREATE TABLE  clientes (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      nombre varchar(150) DEFAULT NULL,
+      identificacion varchar(45) DEFAULT NULL,
+      tipo_documento varchar(45) DEFAULT NULL,
+      direccion varchar(100) DEFAULT NULL,
+      telefono varchar(100) DEFAULT NULL,
+      email varchar(150) DEFAULT NULL,
+      cliente_estados_id int(11) DEFAULT NULL,
+      insertTime timestamp NULL DEFAULT '2000-01-01 00:00:00',
+      updateTime timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      tipo_cliente_id int(11) NOT NULL DEFAULT '0',
+      celular varchar(45) DEFAULT NULL,
+      ciudad varchar(45) DEFAULT NULL,
+      sync_field int(11) DEFAULT '0',
+      cliente_facturacion_id varchar(100) DEFAULT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+  DROP TABLE IF EXISTS cuentas;
+  CREATE TABLE IF NOT EXISTS cuentas (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      cliente_id varchar(45) DEFAULT NULL,
+      cuenta_estados_id int(11) NOT NULL,
+      credito decimal(10,2) NOT NULL DEFAULT '0.00',
+      saldo decimal(10,2) NOT NULL DEFAULT '0.00',
+      insertTime timestamp NULL DEFAULT NULL,
+      updateTime timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      cliente_identificacion varchar(45) DEFAULT NULL,
+      descripcion_cuenta varchar(200) DEFAULT NULL,
+      relacion_bolsa INT(2) NULL DEFAULT '0',
+	    isBolsa INT(2) NULL DEFAULT '0',
+      contrato INT(10) NULL DEFAULT '0',
+      PRIMARY KEY (id)
+  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+  DROP TABLE IF EXISTS tags;
+  CREATE TABLE IF NOT EXISTS tags (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    tag_id varchar(60) DEFAULT NULL,
+    cliente_id int(11) NOT NULL,
+    numero_facial varchar(10) DEFAULT NULL,
+    cuenta_id int(11) NOT NULL,
+    vehiculo_id int(11) NOT NULL,
+    tarjeta_estados_id int(11) NOT NULL,
+    insertTime timestamp NULL DEFAULT NULL,
+    updateTime timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    archivo_contrato mediumblob,
+    placa_vehiculo varchar(45) DEFAULT NULL,
+    estado_compra int(11) DEFAULT '0' COMMENT 'Estado de la compra del TAG: 0 => Pendiente por cobrar, 1 => Cobrado con facturacion electronica, 2 => Cobrado sin facturacion electronica',
+    PRIMARY KEY (id),
+    UNIQUE KEY tag_id_UNIQUE (tag_id)
+  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+  DROP TABLE IF EXISTS vehiculos;
+  CREATE TABLE IF NOT EXISTS vehiculos (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    TID varchar(120) DEFAULT NULL,
+    EPC varchar(120) DEFAULT NULL,
+    recaudador_id int(11) DEFAULT NULL,
+    categoria_id int(11) NOT NULL,
+    fecha_emision timestamp NULL DEFAULT NULL,
+    estado int(11) NOT NULL DEFAULT '0',
+    tipos_contrato_id int(11) DEFAULT '0',
+    placa_vehiculo varchar(45) NOT NULL,
+    saldo decimal(10,2) NOT NULL DEFAULT '0.00',
+    num_ejes int(11) DEFAULT '0',
+    tipo_ejes_id int(11) DEFAULT '0',
+    tipo_especiales_id int(11) DEFAULT '0',
+    cuenta_id int(11) DEFAULT NULL,
+    forma_pago_id int(11) NOT NULL DEFAULT '0',
+    credito decimal(10,2) DEFAULT '0.00',
+    estado_saldo_id int(11) DEFAULT '0',
+    estado_sincro_id int(11) DEFAULT '0',
+    fecha_actualizacion datetime DEFAULT CURRENT_TIMESTAMP,
+    fecha_sincronizacion datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    modelo_vehiculo varchar(30) DEFAULT NULL,
+    marca_vehiculo varchar(30) DEFAULT NULL,
+    color_vehiculo varchar(30) DEFAULT NULL,
+    fecha_insercion datetime DEFAULT CURRENT_TIMESTAMP,
+    descripcion_vehiculo varchar(200),
+    PRIMARY KEY (id),
+    UNIQUE KEY TID_UNIQUE (TID),
+    UNIQUE KEY EPC_UNIQUE (EPC)
+  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+	</script>
+
+</etl>
