@@ -1,0 +1,6 @@
+java -jar scriptella.jar bin_guayabal\ETL_CUENTAS_EXENTAS_VIGENTES.xml 
+
+
+java -jar scriptella.jar bin_vas\ETL_CUENTAS_CLIENTES.xml
+ 
+java -jar dependency/jetty-runner.jar --port 8081 certification_proxy-1.1-SNAPSHOT

@@ -1,0 +1,4 @@
+java -jar scriptella.jar bin_guayabal\ETL_CUENTAS_EXENTAS_VIGENTES.xml 
+
+
+java -jar scriptella.jar bin_vas\ETL_CUENTAS_CLIENTES.xml

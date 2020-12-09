@@ -1,0 +1,43 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+        <include href="mysql.properties" />
+	</properties>
+
+	<connection id="conexion_1_mssql" 
+                driver="${driver_mssql}" 
+                url="${url_mssql}" 
+                user="${usuario_mssql}" 
+                password="${password_mssql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\vas\DatosMysqlTasajera2.tar\DatosMysqlTasajera2\DatosMysql\lib\mssql-jdbc-8.2.2.jre8.jar" />
+
+    <connection id="conexion_2_mysql" 
+                driver="${driver_mysql}" 
+                url="${url_mysql}" 
+                user="${usuario_mysql}" 
+                password="${password_mysql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\vas\DatosMysqlTasajera2.tar\DatosMysqlTasajera2\DatosMysql\lib\mysql-connector-java-5.1.14-bin.jar" />
+	
+    <connection id="log" driver="text"/>
+	
+	<query connection-id="conexion_1_mssql">
+	    select DISTINCT pan as TID  
+	    from  amember 
+	    where PAN is not null
+		
+		<query connection-id="conexion_2_mysql"> 
+			SELECT   vehiculos.id as 'vehiculo_id'  , vehiculos.placa_vehiculo as placa_vehiculo, cuentas.cliente_id as cliente_id
+			 FROM `vehiculos` JOIN cuentas on(vehiculos.cuenta_id=cuentas.id) 
+					 WHERE vehiculos.TID ='${TID}'  
+
+			<script > 
+					INSERT INTO `tags` ( `tag_id`, `cliente_id`,  `cuenta_id`, `vehiculo_id`, `tarjeta_estados_id`,  `placa_vehiculo`, `estado_compra`) 
+							   VALUES ( '${TID}', ${cliente_id} ,${cliente_id} , ${vehiculo_id} ,1 ,'${placa}',2);
+			</script>
+		</query>
+	</query>
+
+</etl>

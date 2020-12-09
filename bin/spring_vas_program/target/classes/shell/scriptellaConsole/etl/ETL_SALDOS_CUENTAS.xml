@@ -1,0 +1,46 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+        <include href="mysql.properties" />
+	</properties>
+
+	<connection id="conexion_1_mssql" 
+                driver="${driver_mssql}" 
+                url="${url_mssql}" 
+                user="${usuario_mssql}" 
+                password="${password_mssql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\master_vas_migration\lib\mssql-jdbc-8.2.2.jre8.jar" />
+
+    <connection id="conexion_2_mysql" 
+                driver="${driver_mysql}" 
+                url="${url_mysql}" 
+                user="${usuario_mysql}" 
+                password="${password_mysql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\master_vas_migration\lib\mysql-connector-java-5.1.14-bin.jar" />
+    <connection id="log" driver="text"/>
+	
+	<query connection-id="conexion_1_mssql">
+	    select DISTINCT  a.creator+a.account+a.luhn as cliente_id ,a.BALANCE as saldo , a.numberdoc as  cliente_identificacion
+	    from aaccount a, amember b, aclass c, atemplate d, astrattime e
+	    where a.creator+a.account = b.creator+b.account
+	    and b.class = c.class
+	    and a.template = d.template
+	    and a.discstrat = e.strattime
+		and a.status = 'N'
+		and a.EXGROUP is  null
+		and  ISNUMERIC(a.numberdoc) =1   ;
+		<script connection-id="conexion_2_mysql">   
+			INSERT INTO `cuentas` (`id`, `cliente_id`, `cuenta_estados_id`,  `saldo`,  `cliente_identificacion`) 
+			VALUES (${cliente_id}, ${cliente_id}, 1,${saldo},'${cliente_identificacion}' );
+
+		</script>
+
+
+	</query>
+
+
+
+</etl>

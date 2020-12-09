@@ -1,0 +1,49 @@
+<!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
+<etl>
+	<properties>
+		<include href="mssql.properties" />
+        <include href="mysql.properties" />
+	</properties>
+
+	<connection id="conexion_1_mssql" 
+                driver="${driver_mssql}" 
+                url="${url_mssql}" 
+                user="${usuario_mssql}" 
+                password="${password_mssql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\vas\DatosMysqlTasajera2.tar\DatosMysqlTasajera2\DatosMysql\lib\mssql-jdbc-8.2.2.jre8.jar" />
+
+    <connection id="conexion_2_mysql" 
+                driver="${driver_mysql}" 
+                url="${url_mysql}" 
+                user="${usuario_mysql}" 
+                password="${password_mysql}"
+		        autocommit="true" 
+                classpath="C:\Users\DELL\Desktop\vas\DatosMysqlTasajera2.tar\DatosMysqlTasajera2\DatosMysql\lib\mysql-connector-java-5.1.14-bin.jar" />
+	
+    <connection id="log" driver="text"/>
+	
+	<query connection-id="conexion_1_mssql">
+	    select pan as TID ,c.CLASS as categoria_id , b.plate as placa_vehiculo , a.BALANCE as saldo,a.creator+a.account+a.luhn as cuenta_id
+	    from aaccount a, amember b, aclass c, atemplate d, astrattime e
+	    where a.creator+a.account = b.creator+b.account
+	    and b.class = c.class
+	    and a.template = d.template
+	    and a.discstrat = e.strattime
+		and a.EXGROUP is  null  
+		AND PAN is not null
+		and ISNUMERIC(a.numberdoc) =1 
+		and a.status = 'N' 
+		
+		<script connection-id="conexion_2_mysql">   
+			INSERT INTO `vehiculos` ( TID, `categoria_id` , `estado`, `tipos_contrato_id`, `placa_vehiculo`, `saldo`,  `cuenta_id`, `forma_pago_id`) 
+			VALUES ('${TID}', ${categoria_id}, 1,7,'${placa_vehiculo}',${saldo},${cuenta_id},2);
+
+		</script>
+
+
+	</query>
+
+
+
+</etl>
